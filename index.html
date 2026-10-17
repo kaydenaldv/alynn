@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untuk Kamu yang Lagi Ngambek 🥰</title>
+    
+    <!-- Google Fonts & Canvas Confetti -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #FF85A1;
+            --primary-dark: #FF6B8B;
+            --secondary: #FBB1BD;
+            --accent: #FFD166;
+            --bg-start: #FFE5EC;
+            --bg-end: #FFF0F5;
+            --text: #4A4E69;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --shadow: 0 10px 30px rgba(255, 133, 161, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px 15px 80px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        h1, h2, h3, .heading-font {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Floating Background Decorations */
+        .bg-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.5;
+            font-size: 1.5rem;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(15deg); }
+        }
+
+        /* Header Card */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-avatar {
+            width: 90px;
+            height: 90px;
+            background: var(--secondary);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.2rem;
+            box-shadow: 0 8px 20px rgba(255, 133, 161, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .title {
+            color: var(--primary-dark);
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            opacity: 0.85;
+            line-height: 1.4;
+        }
+
+        /* Mood Meter */
+        .mood-container {
+            margin-top: 15px;
+        }
+
+        .mood-display {
+            font-size: 3.5rem;
+            margin: 10px 0;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .mood-label {
+            font-weight: 700;
+            color: var(--primary-dark);
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            min-height: 28px;
+        }
+
+        .range-slider {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 12px;
+            border-radius: 6px;
+            background: #E2E8F0;
+            outline: none;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 133, 161, 0.5);
+            transition: transform 0.1s;
+        }
+
+        .range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* Flip Cards Section */
+        .flip-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .flip-card {
+            background-color: transparent;
+            height: 110px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .flip-card-front {
+            background: #FFF;
+            border: 2px dashed var(--secondary);
+            color: var(--primary-dark);
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .flip-card-back {
+            background: var(--primary);
+            color: white;
+            transform: rotateY(180deg);
+            font-size: 0.75rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        /* Section Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 50px;
+            background: white;
+            color: var(--text);
+            font-weight: 700;
+            font-family: 'Fredoka', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            font-size: 0.9rem;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 6px 15px rgba(255, 133, 161, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Mini Game 1: Catch Hearts */
+        #game-canvas {
+            background: linear-gradient(to bottom, #FFF5F7, #FFE3EB);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 100%;
+            height: 280px;
+            display: block;
+            touch-action: none;
+            border: 2px solid var(--secondary);
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-family: 'Fredoka', sans-serif;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 133, 161, 0.3);
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-secondary {
+            background: var(--accent);
+            color: #554000;
+        }
+
+        /* Mini Game 2: Spin Wheel */
+        .wheel-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            margin: 0 auto;
+        }
+
+        #wheel-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 24px solid var(--primary-dark);
+            z-index: 10;
+        }
+
+        /* Love Coupons */
+        .coupon-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .coupon-card {
+            background: white;
+            border-radius: 16px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-left: 6px solid var(--primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            transition: transform 0.2s;
+        }
+
+        .coupon-card:hover {
+            transform: translateX(4px);
+        }
+
+        .coupon-info h4 {
+            font-size: 1rem;
+            color: var(--primary-dark);
+        }
+
+        .coupon-info p {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .coupon-btn {
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            border-radius: 20px;
+        }
+
+        .coupon-btn.used {
+            background: #CBD5E1;
+            color: #64748B;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Apology Trigger Area */
+        .apology-box {
+            background: linear-gradient(135deg, #FFF, #FFF5F7);
+            border: 2px solid var(--primary);
+            text-align: center;
+            padding: 25px 20px;
+        }
+
+        .apology-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            position: relative;
+            min-height: 50px;
+        }
+
+        #btn-no {
+            position: relative;
+            transition: all 0.2s ease;
+            background: #94A3B8;
+        }
+
+        /* Modal Celebration */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-body {
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-overlay.active .modal-body {
+            transform: scale(1);
+        }
+
+        .modal-emoji {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+
+        .modal-title {
+            color: var(--primary-dark);
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+        }
+
+        .modal-desc {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            margin-bottom: 20px;
+            color: #64748B;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            font-size: 0.85rem;
+            opacity: 0.6;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Emojis -->
+    <div class="bg-shapes" id="bg-shapes"></div>
+
+    <div class="container">
+
+        <!-- Header Profile -->
+        <div class="card">
+            <div class="header-avatar" id="avatar">🥺</div>
+            <h1 class="title">Biar Gak Ngambek Lagi~</h1>
+            <p class="subtitle">Website khusus didesain buat balikin mood kamu yang lagi ngambek hari ini. Coba geser mood slider di bawah ya! 👇</p>
+        </div>
+
+        <!-- Mood Meter Section -->
+        <div class="card">
+            <h3 class="heading-font" style="color: var(--primary-dark); font-size: 1.1rem;">Berapa Persen Kesel Kamu Saat Ini?</h3>
+            <div class="mood-container">
+                <div class="mood-display" id="mood-emoji">😡</div>
+                <div class="mood-label" id="mood-text">Tingkat Marah: 100% (Bahaya!)</div>
+                <input type="range" min="0" max="100" value="100" class="range-slider" id="mood-slider">
+            </div>
+        </div>
+
+        <!-- Flip Cards Reasons -->
+        <div class="card">
+            <h3 class="heading-font" style="color: var(--primary-dark); font-size: 1.1rem; margin-bottom: 10px;">3 Alasan Kamu Harus Senyum Lagi:</h3>
+            <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 12px;">(Ketuk kartu untuk membuka pesan)</p>
+            <div class="flip-grid">
+                <div class="flip-card" onclick="flipCard(this)">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <span>Alasan #1 💌</span>
+                        </div>
+                        <div class="flip-card-back">
+                            <span>Kamu makin cantik pas lagi senyum manis!</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="flipCard(this)">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <span>Alasan #2 🍔</span>
+                        </div>
+                        <div class="flip-card-back">
+                            <span>Aku siap beliin makanan kesukaan kamu sekarang!</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flip-card" onclick="flipCard(this)">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <span>Alasan #3 ❤️</span>
+                        </div>
+                        <div class="flip-card-back">
+                            <span>Aku tulus minta maaf & sayang banget sama kamu!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Games & Coupons Tabs -->
+        <div>
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('game1')">🎮 Tangkap Hati</button>
+                <button class="tab-btn" onclick="switchTab('game2')">🎰 Roda Hadiah</button>
+                <button class="tab-btn" onclick="switchTab('coupons')">🎟️ Kupon Sayang</button>
+            </div>
+
+            <!-- Tab 1: Tangkap Hati -->
+            <div id="tab-game1" class="tab-content active card">
+                <h3 class="heading-font" style="color: var(--primary-dark); margin-bottom: 5px;">Game 1: Tangkap Hati 💖</h3>
+                <p style="font-size: 0.85rem; margin-bottom: 12px; opacity: 0.8;">Geser keranjang buat tangkap cinta & makanan! Hindari bom pemicu ngambek (💣).</p>
+                
+                <canvas id="game-canvas"></canvas>
+                
+                <div class="game-controls">
+                    <span id="game-score" style="font-weight: 700; color: var(--primary-dark);">Skor: 0</span>
+                    <button class="btn" id="start-game-btn" onclick="startGame1()">Mulai Main</button>
+                </div>
+            </div>
+
+            <!-- Tab 2: Roda Pengobat Ngambek -->
+            <div id="tab-game2" class="tab-content card">
+                <h3 class="heading-font" style="color: var(--primary-dark); margin-bottom: 5px;">Game 2: Spin Hadiah 🎁</h3>
+                <p style="font-size: 0.85rem; margin-bottom: 15px; opacity: 0.8;">Putar roda ini buat tentuin kompensasi minta maaf aku hari ini!</p>
+                
+                <div class="wheel-container">
+                    <div class="wheel-pointer"></div>
+                    <canvas id="wheel-canvas" width="250" height="250"></canvas>
+                </div>
+
+                <button class="btn btn-secondary" style="margin-top: 20px; width: 100%;" onclick="spinWheel()" id="spin-btn">Putar Roda!</button>
+            </div>
+
+            <!-- Tab 3: Kupon Perdamaian -->
+            <div id="tab-coupons" class="tab-content card">
+                <h3 class="heading-font" style="color: var(--primary-dark); margin-bottom: 10px;">Kupon Serba Bebas 🎟️</h3>
+                <p style="font-size: 0.85rem; margin-bottom: 15px; opacity: 0.8;">Kupon ini berlaku kapan aja & gak bisa ditolak sama aku!</p>
+                
+                <div class="coupon-grid">
+                    <div class="coupon-card">
+                        <div class="coupon-info">
+                            <h4>🧋 Free Boba / Matcha</h4>
+                            <p>Bebas pilih ukuran & topping</p>
+                        </div>
+                        <button class="btn coupon-btn" onclick="claimCoupon(this, 'Boba / Matcha Bebas')">Klaim</button>
+                    </div>
+                    <div class="coupon-card">
+                        <div class="coupon-info">
+                            <h4>🍕 Free Jajanan Bebas</h4>
+                            <p>Bebas pesen via GoFood / GrabFood</p>
+                        </div>
+                        <button class="btn coupon-btn" onclick="claimCoupon(this, 'Jajanan Bebas')">Klaim</button>
+                    </div>
+                    <div class="coupon-card">
+                        <div class="coupon-info">
+                            <h4>🤗 Hug & Pukpuk Extra</h4>
+                            <p>Dipeluk erat pas ketemu nanti</p>
+                        </div>
+                        <button class="btn coupon-btn" onclick="claimCoupon(this, 'Pelukan Extra')">Klaim</button>
+                    </div>
+                    <div class="coupon-card">
+                        <div class="coupon-info">
+                            <h4>👑 'Kamu Selalu Benar' Day</h4>
+                            <p>Aku nurut seharian tanpa bantah</p>
+                        </div>
+                        <button class="btn coupon-btn" onclick="claimCoupon(this, 'Kamu Selalu Benar')">Klaim</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final Apology Proposal -->
+        <div class="card apology-box">
+            <h2 class="heading-font" style="color: var(--primary-dark); font-size: 1.5rem; margin-bottom: 10px;">Jadi... Udah Gak Ngambek Lagi Kan? 🥺</h2>
+            <p style="font-size: 0.9rem; opacity: 0.8;">Pilih jawaban jujur dari hati kamu yaa~</p>
+            
+            <div class="apology-buttons">
+                <button class="btn" style="font-size: 1.1rem; padding: 12px 30px;" onclick="acceptApology()">Iya, Maafin! 🥰</button>
+                <button class="btn" id="btn-no" style="font-size: 1.1rem; padding: 12px 30px;" onmouseover="moveNoButton()" onclick="moveNoButton()" ontouchstart="moveNoButton()">Nggak! 😜</button>
+            </div>
+        </div>
+
+        <footer>
+            Dibuat penuh dengan ❤️ & rasa bersalah oleh Pacar Kamu.
+        </footer>
+
+    </div>
+
+    <!-- Celebration Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-body">
+            <div class="modal-emoji" id="modal-emoji">🎉</div>
+            <h3 class="heading-font modal-title" id="modal-title">Yayy! Makasih Ya!</h3>
+            <p class="modal-desc" id="modal-desc">Makasih udah mau maafin aku. Aku janji gak bikin kesel lagi. I love you so much! ❤️✨</p>
+            <button class="btn" style="width: 100%;" onclick="closeModal()">Tutup & Peluk 🤗</button>
+        </div>
+    </div>
+
+    <script>
+        /* --- Floating Shapes Background --- */
+        const shapes = ['❤️', '✨', '🌸', '🎀', '🧸', '💖'];
+        const container = id('bg-shapes');
+        for(let i = 0; i < 15; i++) {
+            const div = document.createElement('div');
+            div.className = 'shape';
+            div.innerText = shapes[Math.floor(Math.random() * shapes.length)];
+            div.style.left = Math.random() * 100 + 'vw';
+            div.style.top = Math.random() * 100 + 'vh';
+            div.style.animationDuration = (Math.random() * 3 + 4) + 's';
+            div.style.animationDelay = Math.random() * 2 + 's';
+            container.appendChild(div);
+        }
+
+        function id(name) { return document.getElementById(name); }
+
+        /* --- Mood Slider Logic --- */
+        const moodSlider = id('mood-slider');
+        const moodEmoji = id('mood-emoji');
+        const moodText = id('mood-text');
+        const avatar = id('avatar');
+
+        const moodData = [
+            { threshold: 80, emoji: '😡', text: 'Tingkat Marah: 100% (Bahaya Tinggi!)', avatar: '🥺' },
+            { threshold: 60, emoji: '😤', text: 'Tingkat Marah: 75% (Masih Menterang)', avatar: '😰' },
+            { threshold: 40, emoji: '😕', text: 'Tingkat Marah: 50% (Mulai Agak Lumer)', avatar: '😬' },
+            { threshold: 20, emoji: '🙂', text: 'Tingkat Marah: 25% (Udah Mulai Senyum!)', avatar: '👉👈' },
+            { threshold: 0,  emoji: '🥰', text: 'Tingkat Marah: 0% (Mood Udah Balik 100%!)', avatar: '💖' }
+        ];
+
+        moodSlider.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            for(let data of moodData) {
+                if(val >= data.threshold) {
+                    moodEmoji.innerText = data.emoji;
+                    moodText.innerText = data.text;
+                    avatar.innerText = data.avatar;
+                    moodEmoji.style.transform = `scale(${1 + (100 - val)/200})`;
+                    break;
+                }
+            }
+            if(val === 0) {
+                triggerConfetti();
+            }
+        });
+
+        /* --- Flip Cards --- */
+        function flipCard(card) {
+            card.classList.toggle('flipped');
+        }
+
+        /* --- Tabs Switcher --- */
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.currentTarget.classList.add('active');
+            id(`tab-${tabName}`).classList.add('active');
+
+            if(tabName === 'game2') drawWheel();
+        }
+
+        /* --- Mini Game 1: Catch Hearts --- */
+        const canvas = id('game-canvas');
+        const ctx = canvas.getContext('2d');
+        let gameActive = false;
+        let score = 0;
+        let basket = { x: 0, width: 60, height: 15 };
+        let items = [];
+        let animId = null;
+
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            basket.x = canvas.width / 2 - basket.width / 2;
+        }
+
+        function startGame1() {
+            resizeCanvas();
+            score = 0;
+            items = [];
+            gameActive = true;
+            id('game-score').innerText = 'Skor: 0';
+            id('start-game-btn').innerText = 'Main Lagi';
+            
+            if(animId) cancelAnimationFrame(animId);
+            gameLoop();
+        }
+
+        function spawnItem() {
+            const types = [
+                { symbol: '❤️', points: 10, speed: 2 },
+                { symbol: '🧋', points: 15, speed: 2.5 },
+                { symbol: '✨', points: 5,  speed: 1.8 },
+                { symbol: '💣', points: -20, speed: 3 }
+            ];
+            const type = types[Math.floor(Math.random() * types.length)];
+            items.push({
+                x: Math.random() * (canvas.width - 30) + 15,
+                y: -20,
+                ...type
+            });
+        }
+
+        let frameCount = 0;
+        function gameLoop() {
+            if(!gameActive) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Basket
+            ctx.fillStyle = '#FF85A1';
+            ctx.beginPath();
+            ctx.roundRect(basket.x, canvas.height - 25, basket.width, basket.height, 10);
+            ctx.fill();
+
+            // Spawn
+            frameCount++;
+            if(frameCount % 40 === 0) spawnItem();
+
+            // Move & Draw Items
+            for(let i = items.length - 1; i >= 0; i--) {
+                let item = items[i];
+                item.y += item.speed;
+
+                ctx.font = '22px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(item.symbol, item.x, item.y);
+
+                // Collision Detection
+                if(item.y >= canvas.height - 30 && item.y <= canvas.height - 10 &&
+                   item.x >= basket.x - 10 && item.x <= basket.x + basket.width + 10) {
+                    score += item.points;
+                    if(score < 0) score = 0;
+                    id('game-score').innerText = 'Skor: ' + score;
+                    items.splice(i, 1);
+
+                    if(score >= 100) {
+                        gameActive = false;
+                        showModal('🎉 Menang Great Job!', 'Hebat banget! Skor kamu tembus 100. Mood kamu kudu ikutan naik dong sekarang! 💖');
+                        triggerConfetti();
+                    }
+                } else if(item.y > canvas.height + 20) {
+                    items.splice(i, 1);
+                }
+            }
+
+            animId = requestAnimationFrame(gameLoop);
+        }
+
+        // Controls Canvas Touch/Mouse
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            basket.x = e.clientX - rect.left - basket.width / 2;
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            basket.x = e.touches[0].clientX - rect.left - basket.width / 2;
+            e.preventDefault();
+        }, { passive: false });
+
+
+        /* --- Mini Game 2: Spin Wheel --- */
+        const wheelCanvas = id('wheel-canvas');
+        const wCtx = wheelCanvas.getContext('2d');
+        const rewards = ['Free Boba', 'Nonton Bioskop', 'Peluk 1 Menit', 'Jalan-Jalan', 'Makan Bebas', 'Diturutin 1x'];
+        const colors = ['#FF85A1', '#FFD166', '#FBB1BD', '#9BF6FF', '#BDB2FF', '#FFC6FF'];
+        let startAngle = 0;
+        let isSpinning = false;
+
+        function drawWheel() {
+            const numOptions = rewards.length;
+            const arcSize = (2 * Math.PI) / numOptions;
+            const radius = 120;
+
+            wCtx.clearRect(0, 0, 250, 250);
+
+            for (let i = 0; i < numOptions; i++) {
+                const angle = startAngle + i * arcSize;
+                wCtx.fillStyle = colors[i % colors.length];
+                wCtx.beginPath();
+                wCtx.moveTo(125, 125);
+                wCtx.arc(125, 125, radius, angle, angle + arcSize, false);
+                wCtx.lineTo(125, 125);
+                wCtx.fill();
+
+                // Text
+                wCtx.save();
+                wCtx.fillStyle = '#4A4E69';
+                wCtx.font = 'bold 12px Nunito';
+                wCtx.translate(125 + Math.cos(angle + arcSize / 2) * (radius - 40), 
+                               125 + Math.sin(angle + arcSize / 2) * (radius - 40));
+                wCtx.rotate(angle + arcSize / 2 + Math.PI / 2);
+                wCtx.fillText(rewards[i], -wCtx.measureText(rewards[i]).width / 2, 0);
+                wCtx.restore();
+            }
+        }
+
+        function spinWheel() {
+            if (isSpinning) return;
+            isSpinning = true;
+
+            let spinTime = 0;
+            const spinTimeTotal = Math.random() * 3000 + 4000;
+            const spinAngleStart = Math.random() * 10 + 10;
+
+            function rotate() {
+                spinTime += 30;
+                if (spinTime >= spinTimeTotal) {
+                    isSpinning = false;
+                    calculatePrize();
+                    return;
+                }
+                const spinAngle = spinAngleStart - easeOut(spinTime, 0, spinAngleStart, spinTimeTotal);
+                startAngle += (spinAngle * Math.PI / 180);
+                drawWheel();
+                requestAnimationFrame(rotate);
+            }
+            rotate();
+        }
+
+        function easeOut(t, b, c, d) {
+            const ts = (t /= d) * t;
+            const tc = ts * t;
+            return b + c * (tc + -3 * ts + 3 * t);
+        }
+
+        function calculatePrize() {
+            const degrees = (startAngle * 180 / Math.PI) % 360;
+            const argrad = 360 / rewards.length;
+            // 270 deg is top pointer
+            const index = Math.floor((360 - (degrees % 360) + 270) % 360 / argrad);
+            showModal('🎁 Selamat!', `Kamu dapet: **${rewards[index]}**!\nJangan lupa langsung tagih ke aku ya! 😉`);
+            triggerConfetti();
+        }
+
+        drawWheel();
+
+        /* --- Claim Coupons --- */
+        function claimCoupon(btn, title) {
+            if(btn.classList.contains('used')) return;
+            btn.classList.add('used');
+            btn.innerText = 'Terklaim ✅';
+            showModal('🎟️ Kupon Berhasil Diklaim!', `Kupon "${title}" resmi aktif. Screenshoot layar ini buat bukti ke aku ya!`);
+            triggerConfetti();
+        }
+
+        /* --- Runaway "Nggak" Button --- */
+        function moveNoButton() {
+            const btn = id('btn-no');
+            const x = Math.random() * 200 - 100;
+            const y = Math.random() * 150 - 75;
+            btn.style.transform = `translate(${x}px, ${y}px)`;
+        }
+
+        function acceptApology() {
+            moodSlider.value = 0;
+            moodSlider.dispatchEvent(new Event('input'));
+            showModal('🥰 Makasih Sayang!!', 'Yesss! Makasih udah maafin aku. Janji deh abis ini kita seneng-seneng terus! I love you! ❤️✨');
+            triggerConfetti();
+        }
+
+        /* --- Modal Helper --- */
+        function showModal(title, desc) {
+            id('modal-title').innerText = title;
+            id('modal-desc').innerText = desc;
+            id('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            id('modal').classList.remove('active');
+        }
+
+        function triggerConfetti() {
+            if(typeof confetti === 'function') {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
